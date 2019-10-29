@@ -1,4 +1,5 @@
 import logging
+import ChatType
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
@@ -9,14 +10,20 @@ logger = logging.getLogger(__name__)
 
 
 def start(update, context):
-    update.message.reply_text('Hi!')
+    group_members_amount = update.bot.get_chat_members_count(update.message.chat_id)
+    if group_members_amount <= 3:
+        chat_type = ChatType(group_members_amount - 2)
+    else:
+        update.message.reply_text('you can only play with 1 friend, which can be the bot itself by the way')
 
 
 def help(update, context):
-    update.message.reply_text('Help!')
+    update.message.reply_text('/start to start a game with bot'
+                              'or add this bot to chat group with you and the person you want to challenge '
+                              'and enter /start')
 
 
-def echo(update, context):
+def move(update, context):
     update.message.reply_text(update.message.text)
 
 
@@ -25,17 +32,13 @@ def error(update, context):
 
 
 def main():
-    #TOKEN = str(os.environ.get('TOKEN'))
-    #updater = Updater(TOKEN, use_context=True)
     updater = Updater("960888759:AAECyatQetOLUPB660SEJfvc8LUdOUffS4A", use_context=True)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(MessageHandler(Filters.text, echo))
+    dp.add_handler(MessageHandler(Filters.text, move))
     dp.add_error_handler(error)
     updater.start_polling()
-    #updater.start_webhook(listen="0.0.0.0", port=8443, url_path=TOKEN)
-    #updater.bot.set_webhook('https://tictactoe-zavullon.herokuapp.com/' + TOKEN)
     updater.idle()
 
 
