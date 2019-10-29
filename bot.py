@@ -13,6 +13,7 @@ def start(update, context):
     group_members_amount = update.bot.get_chat_members_count(update.message.chat_id)
     if group_members_amount <= 3:
         chat_type = ChatType(group_members_amount - 2)
+        print(chat_type)
     else:
         update.message.reply_text('you can only play with 1 friend, which can be the bot itself by the way')
 
