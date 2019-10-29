@@ -1,1 +1,1 @@
-worker: python3 main.py
+workerheroku: python3 main.py
