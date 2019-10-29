@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 def start(update, context):
-    update.message.reply_text('test')
     group_members_amount = context.bot.get_chat_members_count(update.message.chat_id)
+    update.message.reply_text(str(group_members_amount))
     if group_members_amount <= 3:
         chat_type = ChatType(group_members_amount - 2)
         update.message.reply_text(chat_type.value)
