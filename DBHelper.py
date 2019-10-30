@@ -10,7 +10,7 @@ class DBHelper:
         self.DBNAME = os.environ.get('DATABASE')
         self.USER = os.environ.get('USER')
         self.PASSWORD = os.environ.get('PASSWORD')
-        self.HOST = s.environ.get('HOST')
+        self.HOST = os.environ.get('HOST')
         self.conn = psycopg2.connect(dbname=self.DBNAME, user=self.USER, password=self.PASSWORD, host=self.HOST)
         self.cursor = self.conn.cursor()
 
