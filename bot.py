@@ -1,5 +1,4 @@
 import logging
-from ChatType import ChatType
 from DBHelper import DBHelper
 from Game import Game
 from Field import Field
@@ -17,19 +16,18 @@ logger = logging.getLogger(__name__)
 db = DBHelper()
 
 
-def start(update, context):
+def startgame(update, context):
     group_members_amount = context.bot.getChat(update.message.chat_id).get_members_count()
 
     if group_members_amount <= 3:
 
-        chat_type = ChatType(group_members_amount - 2)
-        admins = context.bot.getChat(update.message.chat_id).get_administrators() if chat_type == ChatType.PVP else [
+        admins = context.bot.getChat(update.message.chat_id).get_administrators() if group_members_amount == 3 else [
             context.bot.getChat(update.message.chat_id).get_member(update.message.from_user.id)]
         first_player_id = update.message.from_user.id
 
-        if chat_type == ChatType.PVE:
+        if group_members_amount == 2:
             second_player_id = -1
-        elif chat_type == ChatType.PVP and len(admins) == 2:
+        elif group_members_amount == 3 and len(admins) == 2:
             second_player_id = admins[0].user.id if admins[0].user.id != first_player_id else admins[1].user.id
         else:
             update.message.reply_text('in order to play you should make you partner an admin of this chat')
@@ -44,9 +42,11 @@ def start(update, context):
         custom_keyboard = last_game.field.toPrint()
         reply_markup = telegram.InlineKeyboardMarkup(custom_keyboard)
         if second_player_id == -1:
-            next_move_username = update.message.from_user.username
+            next_move_username = update.message.from_user.first_name
         else:
-            next_move_username = last_game.circle_id if last_game.next_move == SquareValue.CIRCLE else last_game.cross_id
+            next_move_username = context.bot.getChat(update.message.chat_id).get_member(
+                last_game.circle_id).user.first_name if last_game.next_move == SquareValue.CIRCLE else context.bot.getChat(
+                update.message.chat_id).get_member(last_game.cross_id).user.first_name
         context.bot.send_message(update.message.chat_id, next_move_username + "'s turn",
                                  reply_markup=reply_markup)
     else:
@@ -54,9 +54,13 @@ def start(update, context):
 
 
 def help(update, context):
-    update.message.reply_text('/start to start a game with bot'
-                              'or add this bot to chat group with you and the person you want to challenge '
-                              'and enter /start')
+    update.message.reply_text(
+        "Hi there! Wanna play tic-tac-toe? I can help you with that! send /startgame here to start a new game with me, "
+        "I'm not that smart though, not surprising - my creator went to university instead of rap industry, "
+        "what a moron. Nevertheless, I can also help you to play tic-tac-toe with your friend, just add me to a group "
+        "chat and send /startgame, but make sure you've made your opponent an administrator of a chatgroup, I only "
+        "play with cool boys. Also, I will only help you in a tet-a-tet conversation, no third parties. "
+        "Good luck playing")
 
 
 def error(update, context):
@@ -69,20 +73,19 @@ def button(update, context):
 
     if group_members_amount <= 3:
 
-        chat_type = ChatType(group_members_amount - 2)
-        admins = context.bot.getChat(query.message.chat_id).get_administrators() if chat_type == ChatType.PVP else [
+        admins = context.bot.getChat(query.message.chat_id).get_administrators() if group_members_amount == 3 else [
             context.bot.getChat(query.message.chat_id).get_member(query.from_user.id)]
 
-        if chat_type == chat_type.PVP and len(admins) != 2:
+        if group_members_amount == 3 and len(admins) != 2:
             context.bot.send_message(query.message.chat_id,
                                      'in order to play you should make you partner an admin of this chat')
             return
 
         first_player_id = query.from_user.id
 
-        if chat_type == ChatType.PVE:
+        if group_members_amount == 2:
             second_player_id = -1
-        elif chat_type == ChatType.PVP and len(admins) == 2:
+        elif group_members_amount == 3 and len(admins) == 2:
             second_player_id = admins[0].user.id if admins[0].user.id != first_player_id else admins[1].user.id
 
         last_game = db.get_last_game(first_player_id, second_player_id)
@@ -96,10 +99,14 @@ def button(update, context):
             move_result = last_game.move(int(query.data))
             db.update_last_game(last_game)
             if move_result == 'Continue':
-                if last_game.next_move == SquareValue.CROSS:
+                if second_player_id == -1:
+                    next_player_username = admins[0].user.first_name if admins[0].user.id == last_game.circle_id else \
+                        admins[
+                            1].user.first_name
+                elif last_game.next_move == SquareValue.CROSS:
                     next_player_username = admins[0].user.first_name if admins[0].user.id == last_game.cross_id else \
-                    admins[
-                        1].user.first_name
+                        admins[
+                            1].user.first_name
                 else:
                     next_player_username = admins[0].user.first_name if admins[0].user.id == last_game.circle_id else \
                         admins[
@@ -116,7 +123,7 @@ def button(update, context):
 def main():
     updater = Updater(os.environ.get('TOKEN'), use_context=True)
     dp = updater.dispatcher
-    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("startgame", startgame))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CallbackQueryHandler(button))
     dp.add_error_handler(error)
