@@ -11,6 +11,7 @@ class Field:
 
     def toString(self):
         res = ''
+
         for i in self.data:
             for j in i:
                 res += str(j.value)
@@ -22,15 +23,20 @@ class Field:
     def toLetter(self, state):
         return 'X' if state == 2 else '0'
 
+    def isEmpty(self, cell):
+        return self.data[cell // 3][cell % 3] == SquareValue.BLANK
+
     def toPrint(self):
         res = []
         count = 0
+
         for i in self.data:
             tmp = []
             for j in i:
                 tmp.append(
-                    InlineKeyboardButton(self.toLetter(j.value) if j == SquareValue.CIRCLE or j == SquareValue.CROSS else '_',
-                                         callback_data=str(count)))
+                    InlineKeyboardButton(
+                        self.toLetter(j.value) if j == SquareValue.CIRCLE or j == SquareValue.CROSS else '_',
+                        callback_data=str(count)))
                 count += 1
             res.append(tmp)
         return res
