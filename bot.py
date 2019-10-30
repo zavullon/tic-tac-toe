@@ -114,10 +114,15 @@ def button(update, context):
 
                 custom_keyboard = last_game.field.toPrint()
                 reply_markup = telegram.InlineKeyboardMarkup(custom_keyboard)
-                query.message.edit_text(next_player_username + "'s turn", reply_markup=reply_markup)
+                query.message.edit_text(
+                    next_player_username + "'s turn " + (
+                        '(circle)' if last_game.next_move == SquareValue.CIRCLE else '(cross)'),
+                    reply_markup=reply_markup)
             else:
+                custom_keyboard = last_game.field.toPrint()
+                reply_markup = telegram.InlineKeyboardMarkup(custom_keyboard)
                 db.delete_game(last_game)
-                query.message.edit_text(move_result)
+                query.message.edit_text(move_result, reply_markup=reply_markup)
 
 
 def main():
