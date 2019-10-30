@@ -47,7 +47,7 @@ def startgame(update, context):
             next_move_username = context.bot.getChat(update.message.chat_id).get_member(
                 last_game.circle_id).user.first_name if last_game.next_move == SquareValue.CIRCLE else context.bot.getChat(
                 update.message.chat_id).get_member(last_game.cross_id).user.first_name
-        context.bot.send_message(update.message.chat_id, next_move_username + "'s turn",
+        context.bot.send_message(update.message.chat_id, next_move_username + "'s turn (circle)",
                                  reply_markup=reply_markup)
     else:
         update.message.reply_text('you can only play with 1 friend, which can be the bot itself by the way')
