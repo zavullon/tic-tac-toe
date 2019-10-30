@@ -58,7 +58,7 @@ class Game:
                 possible_moves[str(i)] = possible_game_status
         for key, value in possible_moves.items():
             if value == 'Cross won':
-                return key
+                return int(key)
         for i_key in possible_moves.keys():
             for j_key in possible_moves.keys():
                 if i_key != j_key:
@@ -67,5 +67,5 @@ class Game:
                     possible_field.move(j_key, SquareValue.CIRCLE)
                     possible_game_status = self.check_game(possible_field)
                     if possible_game_status == 'Cross won':
-                        return i_key
+                        return int(i_key)
         return int(random.choice(list(possible_moves.keys())))
