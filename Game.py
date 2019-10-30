@@ -59,4 +59,13 @@ class Game:
         for key, value in possible_moves.items():
             if value == 'Cross won':
                 return key
-        return int(list(possible_moves.keys())[0])
+        for i_key in possible_moves.keys():
+            for j_key in possible_moves.keys():
+                if i_key != j_key:
+                    possible_field = Field(self.field.toString())
+                    possible_field.move(i_key, SquareValue.CIRCLE)
+                    possible_field.move(j_key, SquareValue.CIRCLE)
+                    possible_game_status = self.check_game(possible_field)
+                    if possible_game_status == 'Cross won':
+                        return i_key
+        return int(random.choice(list(possible_moves.keys())))

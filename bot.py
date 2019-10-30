@@ -43,7 +43,11 @@ def start(update, context):
 
         custom_keyboard = last_game.field.toPrint()
         reply_markup = telegram.InlineKeyboardMarkup(custom_keyboard)
-        context.bot.send_message(update.message.chat_id, update.message.from_user.username + "'s turn",
+        if second_player_id == -1:
+            next_move_username = update.message.from_user.username
+        else:
+            next_move_username = last_game.circle_id if last_game.next_move == SquareValue.CIRCLE else last_game.cross_id
+        context.bot.send_message(update.message.chat_id, next_move_username + "'s turn",
                                  reply_markup=reply_markup)
     else:
         update.message.reply_text('you can only play with 1 friend, which can be the bot itself by the way')
@@ -93,7 +97,8 @@ def button(update, context):
             db.update_last_game(last_game)
             if move_result == 'Continue':
                 if last_game.next_move == SquareValue.CROSS:
-                    next_player_username = admins[0].user.first_name if admins[0].user.id == last_game.cross_id else admins[
+                    next_player_username = admins[0].user.first_name if admins[0].user.id == last_game.cross_id else \
+                    admins[
                         1].user.first_name
                 else:
                     next_player_username = admins[0].user.first_name if admins[0].user.id == last_game.circle_id else \
