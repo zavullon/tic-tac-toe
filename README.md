@@ -7,7 +7,7 @@ time and read into the *psycopg2* library, which is used to interact with
 Postgres DB. I've spent 2 days on this project, of course not full days, 
 the fact that I'm still a student should be taken into account. Nevertheless,
 I've figured out *heroku, postgresql, psycopg2* and pretty much *python-telegram-bot*
-with **telegram BOT API**. 
+with **telegram BOT API**, also connected it all via *git*. 
 
 Anyway, this is pretty much the first working release, you can see the commits.
 My bot can play tic-tac-toe with user or arrange a game between two users.
